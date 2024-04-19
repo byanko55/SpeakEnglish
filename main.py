@@ -11,3 +11,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/", response_class=HTMLResponse)
 async def index(request:Request):
     return templates.TemplateResponse("index.html", {"request":request, "msg":"Go"})
+
+@app.exception_handler(404)
+async def non_exist_page(request, __):
+    return templates.TemplateResponse("404.html", {"request": request})
