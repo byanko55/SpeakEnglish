@@ -11,7 +11,7 @@ body, html {
 body {
     width:100%;
     height:100vh;
-    min-width: 768px;
+    min-width: 1024px;
     max-width: 1440px;
     margin: auto;
     background: whitesmoke;
@@ -122,8 +122,14 @@ button {
     }
 }
 
+.quizbox.active,
+.dbtable.active {
+    display: block;
+}
+
 .quizbox { 
-    position: relative; 
+    position: relative;
+    display: none;
 
     .layer-top, 
     .layer-bottom { 
@@ -140,6 +146,7 @@ button {
 .dbtable { 
     position: relative;
     text-align: center;
+    display: none;
 }
 
 .box-question, 
@@ -433,6 +440,7 @@ button {
 
 .popup {
     position: relative;
+    display:none;
     width: 50%;
     margin: auto;
     padding: 1rem;
@@ -448,6 +456,8 @@ button {
         border-bottom: 1px solid #ddd;
     }
 }
+
+.popup.active { display: block; }
 
 .input-container { 
     position: relative;
