@@ -130,17 +130,37 @@ button {
 .quizbox { 
     position: relative;
     display: none;
-
-    .layer-top, 
-    .layer-bottom { 
-        position: relative; 
-    }
-
-    .layer-bottom { 
-        display: flex;
-        width: 30%;
+    
+    h1 {
         margin: auto;
+        margin-bottom: 2rem;
+        color: darkslategrey;
+        text-align: center;
+        padding-bottom: 4px;
+        border-bottom: 1px solid #ddd;
     }
+}
+
+.counts {
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+    color: goldenrod;
+    font-size: 3rem;
+}
+
+.layer-top, 
+.layer-bottom { 
+    position: relative;
+    max-width: 1024px;
+    margin: auto;
+}
+
+.layer-top .question-id { color: indianred; }
+
+.layer-bottom { 
+    display: flex;
+    width: 30%;
+    margin: auto;
 }
 
 .dbtable { 
@@ -154,7 +174,6 @@ button {
     position: relative;
     display: flex;
     width: 100%;
-    max-width: 1024px;
     margin: 1rem auto;
 }
 

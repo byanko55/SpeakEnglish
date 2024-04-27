@@ -5,6 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="{{ url_for('static', path='/style.css') }}" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <link href='https://fonts.googleapis.com/css?family=Righteous' rel='stylesheet'>
   <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
 </head>
@@ -21,17 +22,19 @@
 </div>
 <div id="main">
     <div class="quizbox active">
+        <h1>We are serving total <span class="counts">{{ counts }}</span> sentences!</h1>
         <div class="layer-top">
+            <p class="question-id">#{{ question_id }}</p>
             <div class="box-question">
                 <div class="col-1"><h2>Question</h2></div>
                 <div class="col-2">
-                    <p>...</p>
+                    <p class="question">{{ question }}</p>
                 </div>
             </div>
             <div class="box-answer">
                 <div class="col-1"><h2>Answer</h2></div>
                 <div class="col-2">
-                    <p>...</p>
+                    <p class="answer">...</p>
                     <button id="btn-play"><svg class="ico-play"></svg></button>
                 </div>
             </div>
