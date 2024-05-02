@@ -249,6 +249,7 @@ button {
 
 #btn-play { 
     position: absolute;
+    display: none;
     padding: 4px;
     top: 50%;
     transform: translateY(-16px);
@@ -262,6 +263,10 @@ button {
         svg { background-color:#667eea !important; }
         animation: pulse 1.5s infinite;
     }
+}
+
+#btn-play.active {
+    display: inline-block;
 }
 
 .pagination-container {
