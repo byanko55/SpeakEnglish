@@ -28,16 +28,14 @@ def get_db():
         db.close()
 
 
-def random_question(db: Session):
+def random_question(db: Session = Depends(get_db)):
     global QA
 
     random.seed(time.time())
     cnt = crud.get_counts(db)
 
     rint = int(cnt * random.random())
-    QA = crud.get_item(db, n=rint)
-
-    print(type(QA))
+    return crud.get_item(db, n=rint)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -45,7 +43,7 @@ async def index(request:Request, db: Session = Depends(get_db)):
     global QA
 
     cnt = crud.get_counts(db)
-    random_question(db)
+    QA = random_question(db)
     
     return templates.TemplateResponse("index.html", {
         "request":request, 
@@ -60,6 +58,15 @@ def get_answer():
     global QA
 
     return [{'answer': QA.original}]
+
+
+@app.get("/next")
+def get_nextQA(db: Session = Depends(get_db)):
+    global QA
+
+    QA = random_question(db)
+
+    return [{'question_id': QA.id, 'question': QA.translated}]
 
 
 @app.get("/item/", response_model=list[schemas.Item])
