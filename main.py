@@ -49,7 +49,7 @@ async def index(request:Request, db: Session = Depends(get_db)):
         "request":request, 
         "counts":cnt, 
         "question":QA.translated,
-        "question_id":QA.id
+        "question_id":QA.id + 1
     })
 
 
@@ -66,7 +66,20 @@ def get_nextQA(db: Session = Depends(get_db)):
 
     QA = random_question(db)
 
-    return [{'question_id': QA.id, 'question': QA.translated}]
+    return [{'question_id': QA.id + 1, 'question': QA.translated}]
+
+
+@app.get("/search")
+def get_records(page:int = 1, keyword:str = '', db: Session = Depends(get_db)):
+    """
+    if keyword != '':
+        cnt = crud.get_counts_by_keyword(db, keyword)
+        
+        return 0
+    """ 
+    items = crud.get_items(db, skip=(page-1)*15, limit=15)
+        
+    return items
 
 
 @app.get("/item/", response_model=list[schemas.Item])
