@@ -128,7 +128,6 @@ input {
     padding: 2rem;
     
     button svg {
-        background-color: #444;
         mask-repeat: no-repeat;
         display: inline-flex;
     }
@@ -318,6 +317,7 @@ input {
 
         button svg { 
             width: 1.5rem;
+            background-color: #444;
             aspect-ratio: 1.0;
             transition:all .3s;
         }
@@ -360,13 +360,16 @@ input {
     border-radius: .2rem;
 }
 
-.pagination-button:not(.disabled):hover {
-    background: #b7c3d1;
+.pagination-button.active {
+    svg { background-color: #333 !important; }
+
+    &:hover { background: #b7c3d1; }
 }
 
 .pagination-button svg {
     width: 1rem;
     aspect-ratio: 1.0;
+    background-color: #aaa; 
 }
 
 .pagination-numbers {

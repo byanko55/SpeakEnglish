@@ -1,5 +1,6 @@
 const header = document.getElementById('header');
 const main = document.getElementById('main');
+let pagination;
 
 
 const revealAnswer = () => {
@@ -94,8 +95,6 @@ const getSentenceList = (page) => {
                 '</td>';
 
             contents.append(record_info);
-    
-            //console.log(record);
         }
 
         console.log("[getSentenceList] Found the list of sentences: '#" + (res[0].id + 1) + " ~ #" + (res[0].id + res.length) + "'");
@@ -105,9 +104,73 @@ const getSentenceList = (page) => {
 }
 
 
+const initPagination = (page, limit) => {
+    var res;
+
+    $.getJSON('/count', {}, function (data) {
+        console.log("[initPagination] Get the number of sentences");
+        res = data[0];
+    })
+    .done(function() {
+        pagination = new Pagination(page, limit, res.count);
+        pagination.setCurrentPage(page);
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) { console.log('[initPagination] getJSON request failed: ' + textStatus); })
+    .always(function() { console.log('[initPagination] getJSON request ended!'); });
+};
+
+
+class Pagination{
+    constructor(page, limit, numRecords) {
+        this.currentPage = page;
+        this.paginationLimit = limit;
+        this.pageCount = Math.ceil(numRecords / limit);
+
+        document.getElementById("input-page").value = page;
+        document.querySelector(".total-pages").innerText = this.pageCount;
+    }
+
+    disableButton(button){
+        button.classList.remove("active");
+    };
+    
+    enableButton(button){
+        button.classList.add("active");
+    };
+    
+    setCurrentPage(page){
+        this.currentPage = page;
+        
+        const nextButton = document.getElementById("btn-nextpage");
+        const prevButton = document.getElementById("btn-prevpage");
+        const firstButton = document.getElementById("btn-firstpage");
+        const lastButton = document.getElementById("btn-lastpage");
+
+        if (this.currentPage == 1) {
+            this.disableButton(prevButton);
+            this.disableButton(firstButton);
+        } else {
+            this.enableButton(prevButton);
+            this.enableButton(firstButton);
+        }
+    
+        if (this.pageCount == this.currentPage) {
+            this.disableButton(nextButton);
+            this.disableButton(lastButton);
+        } else {
+            this.enableButton(nextButton);
+            this.enableButton(lastButton);
+        }
+    };
+}
+
+
 document.addEventListener('DOMContentLoaded', function(){
     let quizBox = document.querySelector('.quizbox');
     let tablebox = document.querySelector('.tablebox');
+
+    let lastPage = 1;
+    let lastKeyword = '';
 
     // tab
     let tabMain = document.getElementById('link-main');
@@ -145,7 +208,10 @@ document.addEventListener('DOMContentLoaded', function(){
 
     if (urlParams.has('page')){
         refreshListUI();
-        getSentenceList(urlParams.get('page'));
+
+        lastPage = urlParams.get('page');
+        getSentenceList(lastPage);
+        initPagination(lastPage, 15);
     }
 
     // Reveal
@@ -157,6 +223,7 @@ document.addEventListener('DOMContentLoaded', function(){
     // Play
 
     // Pagination
+    //const pagination = new Pagination(lastPage, 15, );
 
     // Reset
 
