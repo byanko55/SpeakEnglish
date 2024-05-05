@@ -69,6 +69,13 @@ def get_nextQA(db: Session = Depends(get_db)):
     return [{'question_id': QA.id + 1, 'question': QA.translated}]
 
 
+@app.get("/count")
+def get_count(db: Session = Depends(get_db)):
+    cnt = crud.get_counts(db)
+
+    return [{'count': cnt}]
+
+
 @app.get("/search")
 def get_records(page:int = 1, keyword:str = '', db: Session = Depends(get_db)):
     """
