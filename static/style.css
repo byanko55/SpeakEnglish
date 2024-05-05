@@ -24,6 +24,18 @@ button {
     cursor: pointer;
 }
 
+input {
+    color: #444;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+
+    &:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .25);
+    }
+}
+
 #header {
     height: 4rem;
     background: #CDE8E5;
@@ -339,24 +351,34 @@ button {
     }
 }
 
-.pagination-number,
 .pagination-button{
-    font-size:1.25rem;
-    margin:4px;
+    margin:8px;
     cursor:pointer;
-    width:2.5rem;
+    width:2rem;
     aspect-ratio:1.0;
-    color: darkslateblue;
     font-weight: 600;
     border-radius: .2rem;
 }
-.pagination-number:hover,
+
 .pagination-button:not(.disabled):hover {
     background: #b7c3d1;
 }
-.pagination-number.active {
-    color:#fff;
-    background:#0085b6;
+
+.pagination-button svg {
+    width: 1rem;
+    aspect-ratio: 1.0;
+}
+
+.pagination-numbers {
+    word-spacing: 4px;
+    margin: auto 1rem;
+
+    input {
+        font-size: 1rem;
+        width: 3rem;
+        padding: 5px;
+        text-align: center;
+    }
 }
 
 .table-container {
@@ -499,16 +521,7 @@ button {
         font-size: 1.25rem;
         margin: 4px auto;
         width: 100%;
-        color: #444;
         padding: 4px 8px;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-
-        &:focus {
-            border-color: #80bdff;
-            outline: 0;
-            box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .25);
-        }
     }
 }
 
@@ -540,6 +553,26 @@ button {
 .ico-play {
     -webkit-mask-image:url('/static/img/audioplay.svg');
     mask-image:url('/static/img/audioplay.svg');
+}
+
+.ico-first {
+    -webkit-mask-image:url('/static/img/first.svg');
+    mask-image:url('/static/img/first.svg');
+}
+
+.ico-forward,
+.ico-backward {
+    -webkit-mask-image:url('/static/img/arrow.svg');
+    mask-image:url('/static/img/arrow.svg');
+}
+
+.ico-forward { transform: translateX(2px); }
+
+.ico-backward { transform: rotate(180deg) translateX(2px); }
+
+.ico-last {
+    -webkit-mask-image:url('/static/img/last.svg');
+    mask-image:url('/static/img/last.svg');
 }
 
 .ico-reset {

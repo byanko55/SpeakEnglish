@@ -51,12 +51,22 @@
     <div class="tablebox">
         <div class="pagination-container">
             <nav class="pagination">
-                <button class="pagination-button" id="btn-prevpage" aria-label="Previous page" title="Previous page">
-                    &lt;
+                <button class="pagination-button" id="btn-firstpage" aria-label="Previous page" title="Previous page">
+                    <svg class="ico-first"></svg>
                 </button>
-                <div class="pagination-numbers"></div>
-                <button class="pagination-button" id="btn-nextpage" aria-label="Next page" title="Next page">
-                    &gt;
+                <button class="pagination-button" id="btn-prevpage" aria-label="Previous page" title="Previous page">
+                    <svg class="ico-backward"></svg>
+                </button>
+                <div class="pagination-numbers">
+                    <input id="input-page" type="text" value="1"/>
+                    of 
+                    <span class="total-pages">100</span>
+                </div>
+                <button class="pagination-button" id="btn-nextpage" aria-label="Previous page" title="Previous page">
+                    <svg class="ico-forward"></svg>
+                </button>
+                <button class="pagination-button" id="btn-lastpage" aria-label="Next page" title="Next page">
+                    <svg class="ico-last"></svg>
                 </button>
             </nav>
             <ul>
