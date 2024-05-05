@@ -54,6 +54,16 @@ const nextQuestion = () => {
 };
 
 
+const resetPage = () => {
+    let btnReset = document.getElementById('btn-reset');
+
+    btnReset.addEventListener('click', function() {
+        initPagination(1, 15);
+        getSentenceList(1);
+    });
+}
+
+
 const getSentenceList = (page) => {
     var res;
 
@@ -114,6 +124,11 @@ const initPagination = (page, limit) => {
     .done(function() {
         pagination = new Pagination(page, limit, res.count);
         pagination.setCurrentPage(page);
+
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', page);
+
+        window.history.replaceState(null, null, url);
     })
     .fail(function(jqXHR, textStatus, errorThrown) { console.log('[initPagination] getJSON request failed: ' + textStatus); })
     .always(function() { console.log('[initPagination] getJSON request ended!'); });
@@ -196,11 +211,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
     tabList.addEventListener('click', function() {
         refreshListUI();
-
-        const url = new URL(window.location.href);
-        url.searchParams.set('page', '1');
-
-        window.history.replaceState(null, null, url);
     });
 
     // URL params
@@ -222,10 +232,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // Play
 
-    // Pagination
-    //const pagination = new Pagination(lastPage, 15, );
-
     // Reset
+    resetPage();
 
     // Add
 
