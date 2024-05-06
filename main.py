@@ -70,7 +70,7 @@ def get_nextQA(db: Session = Depends(get_db)):
 
 
 @app.get("/count")
-def get_count(db: Session = Depends(get_db)):
+def get_count(keyword:str = '', db: Session = Depends(get_db)):
     cnt = crud.get_counts(db)
 
     return [{'count': cnt}]
