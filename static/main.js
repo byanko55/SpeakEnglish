@@ -12,7 +12,7 @@ const rootURL = (window.location.href).split("?")[0];
 
 class Pagination{
     constructor(page, keyword, limit = 15) {
-        this.currentPage = (page == null) ? 1 : page;
+        this.currentPage = (page == null) ? 1 : Number(page);
         this.filterKeyword = (keyword == null) ? '' : keyword;
         this.paginationLimit = limit;
         this.pageCount = 0;
@@ -32,6 +32,14 @@ class Pagination{
 
     initPage(){
         this.setCurrentPage(this.currentPage);
+    }
+
+    setFirstPage(){
+        this.setCurrentPage(1);
+    }
+
+    setLastPage(){
+        this.setCurrentPage(this.pageCount);
     }
     
     setCurrentPage(page){
@@ -64,6 +72,10 @@ class Pagination{
             this.enableButton(nextButton);
             this.enableButton(lastButton);
         }
+
+        document.getElementById("input-page").value = page;
+        getSentenceList(page);
+        updateURLParams();
     }
 }
 
@@ -146,6 +158,16 @@ const refreshListUI = () => {
     tablebox.classList.add('active');
     tabList.classList.add('active');
 
+    updateURLParams();
+
+    if (pagination.reload == false) {
+        getSentenceList(pagination.currentPage);
+        pagination.reload = true;
+    }
+};
+
+
+const updateURLParams = () => {
     newURL = new URL(rootURL);
     newURL.searchParams.set('page', pagination.currentPage);
 
@@ -154,12 +176,7 @@ const refreshListUI = () => {
     }
 
     window.history.replaceState(null, null, newURL);
-
-    if (pagination.reload == false) {
-        getSentenceList(pagination.currentPage);
-        pagination.reload = true;
-    }
-};
+}
 
 
 const getPageCount = () => {
@@ -289,6 +306,32 @@ document.addEventListener('DOMContentLoaded', function(){
     nextQuestion();
 
     // Play
+
+    // Pagination
+    let btnFirstPage = document.getElementById('btn-firstpage');
+    let btnPrevPage = document.getElementById('btn-prevpage');
+    let btnNextPage = document.getElementById('btn-nextpage');
+    let btnLastPage = document.getElementById('btn-lastpage');
+
+    btnFirstPage.addEventListener('click', function() {
+        if (this.classList.contains('active')) 
+            pagination.setFirstPage();
+    });
+
+    btnLastPage.addEventListener('click', function() {
+        if (this.classList.contains('active')) 
+            pagination.setLastPage();
+    });
+
+    btnPrevPage.addEventListener('click', function() {
+        if (this.classList.contains('active')) 
+            pagination.setCurrentPage(pagination.currentPage - 1);
+    });
+
+    btnNextPage.addEventListener('click', function() {
+        if (this.classList.contains('active')) 
+            pagination.setCurrentPage(pagination.currentPage + 1);
+    });
 
     // Reset
     resetPage();
