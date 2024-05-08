@@ -223,6 +223,7 @@ const addNewSentence = () => {
 
     btnAdd.addEventListener('click', function() {
         hideBackground();
+        document.getElementById('popup-add').classList.add('active');
     });
 }
 
@@ -346,4 +347,18 @@ document.addEventListener('DOMContentLoaded', function(){
     // Edit-1
 
     // Edit-2
+
+    // Cancle
+    const popUPs = document.querySelectorAll('.popup');
+    const btnCancles = document.querySelectorAll('#btn-cancle');
+
+    Array.from(btnCancles).forEach(function (btnCancle){
+        btnCancle.addEventListener('click', function() {
+            showBackground();
+
+            Array.from(popUPs).forEach(function (popUP){
+                popUP.classList.remove('active');
+            });
+        });
+    });
 });

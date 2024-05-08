@@ -126,12 +126,16 @@ input {
 
 #main {
     padding: 2rem;
+    opacity: 1.0;
+    transition: opacity .3s; 
     
     button svg {
         mask-repeat: no-repeat;
         display: inline-flex;
     }
 }
+
+#main.transparent { opacity: 0.3; }
 
 .quizbox.active,
 .tablebox.active {
@@ -495,8 +499,11 @@ input {
 }
 
 .popup {
-    position: relative;
+    position: absolute;
     display:none;
+    top: max(25%, 192px);
+    left: 0;
+    right: 0;
     width: 50%;
     margin: auto;
     padding: 1rem;
