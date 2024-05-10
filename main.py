@@ -71,20 +71,14 @@ def get_nextQA(db: Session = Depends(get_db)):
 
 @app.get("/count")
 def get_count(keyword:str = '', db: Session = Depends(get_db)):
-    cnt = crud.get_counts(db)
+    cnt = crud.get_counts(db, keyword)
 
     return [{'count': cnt}]
 
 
 @app.get("/search")
 def get_records(page:int = 1, keyword:str = '', db: Session = Depends(get_db)):
-    """
-    if keyword != '':
-        cnt = crud.get_counts_by_keyword(db, keyword)
-        
-        return 0
-    """ 
-    items = crud.get_items(db, skip=(page-1)*15, limit=15)
+    items = crud.get_items(db, keyword, skip=(page-1)*15, limit=15)
         
     return items
 

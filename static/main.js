@@ -19,7 +19,7 @@ class Pagination{
         this.reload = false;
 
         document.getElementById("input-page").value = this.currentPage;
-        getPageCount();
+        getPageCount(this.filterKeyword);
     }
 
     disableButton(button){
@@ -74,8 +74,9 @@ class Pagination{
         }
 
         document.getElementById("input-page").value = page;
-        getSentenceList(page);
-        updateURLParams();
+        getSentenceList(page, this.filterKeyword);
+
+        if (this.reload) updateURLParams();
     }
 }
 
@@ -161,7 +162,7 @@ const refreshListUI = () => {
     updateURLParams();
 
     if (pagination.reload == false) {
-        getSentenceList(pagination.currentPage);
+        getSentenceList(pagination.currentPage, pagination.filterKeyword);
         pagination.reload = true;
     }
 };
@@ -179,10 +180,10 @@ const updateURLParams = () => {
 }
 
 
-const getPageCount = () => {
+const getPageCount = (keyword='') => {
     var res;
 
-    $.getJSON('/count', {keyword:this.filterKeyword}, function (data) {
+    $.getJSON('/count', {keyword:keyword}, function (data) {
         console.log("[getPageCount] Get the number of sentences");
         res = data[0];
     })
@@ -235,6 +236,17 @@ const createSentece = () => {
 }
 
 
+const searchSentece = () => {
+    let keyword = document.getElementById('input-search').value;
+
+    pagination = new Pagination(1, keyword);
+    refreshListUI();
+
+    showBackground();
+    document.getElementById('popup-search').classList.remove('active');
+}
+
+
 const hideBackground = () => {
     main.classList.add('transparent');
 }
@@ -245,10 +257,10 @@ const showBackground = () => {
 }
 
 
-const getSentenceList = (page) => {
+const getSentenceList = (page, keyword='') => {
     var res;
 
-    $.getJSON('/search', {page:page}, function (data) {
+    $.getJSON('/search', {page:page, keyword:keyword}, function (data) {
         console.log("[getSentenceList] Request for the table of sentences at page " + page);
         res = data;
     })
@@ -304,7 +316,6 @@ document.addEventListener('DOMContentLoaded', function(){
     tabList.addEventListener('click', function() {
         refreshListUI();
     });
-
 
     // URL params
     const urlParams = new URLSearchParams(window.location.search);
@@ -374,6 +385,18 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     // Search
+    let btnSearch = document.getElementById('btn-search');
+
+    btnSearch.addEventListener('click', function() {
+        hideBackground();
+        document.getElementById('popup-search').classList.add('active');
+    });
+
+    let btnConfirmSearch = document.querySelector('#popup-search #btn-confirm');
+    
+    btnConfirmSearch.addEventListener('click', function() {
+        searchSentece();
+    });
 
     // Delete
 
