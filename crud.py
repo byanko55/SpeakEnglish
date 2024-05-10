@@ -8,11 +8,14 @@ def get_item(db: Session, n: int = 0):
 
 
 def get_items(db: Session, skip: int = 0, limit: int = 15):
-    return db.query(models.Item).offset(skip).limit(limit).all()
+    records = db.query(models.Item).order_by(models.Item.id)
+    return records.offset(skip).limit(limit).all()
 
 
 def get_items_by_keyword(db: Session, keyword: str, limit: int = 15):
-    return db.query(models.Item).filter(models.Item.translated.contains(keyword)).limit(limit).all()
+    filtered = db.query(models.Item).filter(models.Item.translated.contains(keyword))
+    records = filtered.order_by(models.Item.id)
+    return records.limit(limit).all()
 
 
 def get_counts(db: Session):
