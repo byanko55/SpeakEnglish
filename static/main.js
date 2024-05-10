@@ -198,12 +198,39 @@ const getPageCount = () => {
 }
 
 
-const resetPage = () => {
-    let btnReset = document.getElementById('btn-reset');
+const postData = async (url = '', data = {}) => {
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
 
-    btnReset.addEventListener('click', function() {
-        pagination = new Pagination(1, '', recordsPerPage);
-        refreshListUI();
+    return response.json();
+};
+
+
+const createSentece = () => {
+    let question = document.getElementById('input-create-s1').value;
+    let answer = document.getElementById('input-create-s2').value;
+
+    postData('/create',
+    {
+        translated:question,
+        original:answer
+    })
+    .then(data => {
+        console.log(
+            "[createSentece] Create new question (" +
+            data.original + " ->" + data.translated + ")"
+        );
+        showBackground();
+        document.getElementById('popup-create').classList.remove('active');
+        pagination.initPage();
+    })
+    .catch(error => {
+        console.log("[createSentece] fetch request failed: " + error);
     });
 }
 
@@ -215,16 +242,6 @@ const hideBackground = () => {
 
 const showBackground = () => {
     main.classList.remove('transparent');
-}
-
-
-const addNewSentence = () => {
-    let btnAdd = document.getElementById('btn-add');
-
-    btnAdd.addEventListener('click', function() {
-        hideBackground();
-        document.getElementById('popup-add').classList.add('active');
-    });
 }
 
 
@@ -335,10 +352,26 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     // Reset
-    resetPage();
+    let btnReset = document.getElementById('btn-reset');
 
-    // Add
-    addNewSentence();
+    btnReset.addEventListener('click', function() {
+        pagination = new Pagination(1, '', recordsPerPage);
+        refreshListUI();
+    });
+
+    // Create
+    let btnAdd = document.getElementById('btn-add');
+
+    btnAdd.addEventListener('click', function() {
+        hideBackground();
+        document.getElementById('popup-create').classList.add('active');
+    });
+
+    let btnConfirmAdd = document.querySelector('#popup-create #btn-confirm');
+    
+    btnConfirmAdd.addEventListener('click', function() {
+        createSentece();
+    });
 
     // Search
 

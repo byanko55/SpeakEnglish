@@ -89,6 +89,11 @@ def get_records(page:int = 1, keyword:str = '', db: Session = Depends(get_db)):
     return items
 
 
+@app.post("/create", response_model=schemas.Item)
+def create_records(item: schemas.ItemCreate, db: Session = Depends(get_db)):
+    return crud.create_item(db=db, item=item)
+
+"""
 @app.get("/item/", response_model=list[schemas.Item])
 def read_items(n: int = 4, db: Session = Depends(get_db)):
     items = crud.get_item(db, n=n)
@@ -99,7 +104,7 @@ def read_items(n: int = 4, db: Session = Depends(get_db)):
 def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     items = crud.get_items(db, skip=skip, limit=limit)
     return items
-
+"""
 
 @app.exception_handler(404)
 async def non_exist_page(request, __):
