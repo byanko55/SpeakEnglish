@@ -10,6 +10,10 @@ class ItemCreate(ItemBase):
     pass
 
 
+class ItemDelete(BaseModel):
+    id: int
+
+
 class Item(ItemBase):
     id: int
 
