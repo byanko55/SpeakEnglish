@@ -226,6 +226,19 @@ const deleteData = async (url = '', data = {}) => {
 };
 
 
+const putData = async (url = '', data = {}) => {
+    const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+
+    return response.json();
+};
+
+
 const createSentece = () => {
     let question = document.getElementById('input-create-s1').value;
     let answer = document.getElementById('input-create-s2').value;
@@ -278,6 +291,45 @@ const deleteSentence = (sentenceId) => {
     })
     .catch(error => {
         console.log("[deleteSentence] fetch request failed: " + error);
+    });
+}
+
+
+const editSentence = (sentenceId, IsQuestion) => {
+    if (! isInteger(sentenceId)){
+        window.location.replace("404.html");
+    }
+
+    let keyword;
+    
+    if (IsQuestion){
+        keyword = document.getElementById('input-edit-1').value;
+    }
+    else {
+        keyword = document.getElementById('input-edit-2').value;
+    }
+
+    putData('/edit',
+    {
+        id:Number(sentenceId),
+        new_content: keyword,
+        is_question: IsQuestion
+    })
+    .then(data => {
+        console.log("[editSentence] Edit a question ID: " + sentenceId);
+        showBackground();
+
+        if (IsQuestion){
+            document.getElementById('popup-edit-1').classList.remove('active');
+        }
+        else {
+            document.getElementById('popup-edit-2').classList.remove('active');
+        }
+
+        pagination.initPage();
+    })
+    .catch(error => {
+        console.log("[editSentence] fetch request failed: " + error);
     });
 }
 
@@ -356,7 +408,33 @@ const EnableButtons = () => {
             hideBackground();
             document.getElementById('popup-delete').classList.add('active');
             sid = btnDelete.getAttribute("sid");
-            document.querySelector('.sentence-id').innerText = Number(sid) + 1;
+
+            document.querySelectorAll('.sentence-id').forEach(id => {
+                id.innerText = Number(sid) + 1;
+            });
+            //document.querySelector('.sentence-id').innerText = Number(sid) + 1;
+        });
+    });
+
+    // Edit
+    const btnEdits = document.querySelectorAll('#btn-edit-1, #btn-edit-2');
+
+    Array.from(btnEdits).forEach(function (btnEdit){
+        btnEdit.addEventListener('click', function(){
+            hideBackground();
+
+            if (btnEdit.id == 'btn-edit-1'){
+                document.getElementById('popup-edit-1').classList.add('active');
+            }
+            else {
+                document.getElementById('popup-edit-2').classList.add('active');
+            }
+
+            sid = btnEdit.getAttribute("sid");
+
+            document.querySelectorAll('.sentence-id').forEach(id => {
+                id.innerText = Number(sid) + 1;
+            });
         });
     });
 }
@@ -464,8 +542,18 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     // Edit-1
+    const btnConfirmEditQuestion = document.querySelector('#popup-edit-1 #btn-confirm');
+    
+    btnConfirmEditQuestion.addEventListener('click', function() {
+        editSentence(sid, IsQuestion=true);
+    });
 
     // Edit-2
+    const btnConfirmEditAnswer = document.querySelector('#popup-edit-2 #btn-confirm');
+    
+    btnConfirmEditAnswer.addEventListener('click', function() {
+        editSentence(sid, IsQuestion=false);
+    });
 
     // Cancle
     const btnCancles = document.querySelectorAll('#btn-cancle');

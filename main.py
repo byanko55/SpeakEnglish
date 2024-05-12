@@ -97,6 +97,11 @@ def delete_record(item: schemas.ItemDelete, db: Session = Depends(get_db)):
     return crud.delete_item(db=db, item=item)
 
 
+@app.put("/edit", response_model=schemas.Item)
+def update_record(item: schemas.ItemUpdate, db: Session = Depends(get_db)):
+    return crud.update_item(db=db, item=item)
+
+
 @app.exception_handler(404)
 async def non_exist_page(request, __):
     return templates.TemplateResponse("404.html", {"request": request})

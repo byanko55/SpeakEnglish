@@ -42,3 +42,16 @@ def delete_item(db: Session, item: schemas.ItemDelete):
     db.commit()
     
     return db_item
+
+
+def update_item(db: Session, item: schemas.ItemUpdate):
+    db_item = db.query(models.Item).filter(models.Item.id == item.id).first()
+    
+    if item.is_question :
+        db_item.translated = item.new_content
+    else :
+        db_item.original = item.new_content
+        
+    db.commit()
+    
+    return db_item
