@@ -559,6 +559,11 @@ input {
     }
 }
 
+.sentence-id { 
+    color: #667eea; 
+    font-weight: 600;
+}
+
 
 .ico-play {
     -webkit-mask-image:url('/static/img/audioplay.svg');
