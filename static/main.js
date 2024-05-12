@@ -7,6 +7,7 @@ const tabList = document.getElementById('link-list');
 const recordsPerPage = 15;
 
 let pagination;
+var sid;
 const rootURL = (window.location.href).split("?")[0];
 
 
@@ -212,6 +213,19 @@ const postData = async (url = '', data = {}) => {
 };
 
 
+const deleteData = async (url = '', data = {}) => {
+    const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+
+    return response.json();
+};
+
+
 const createSentece = () => {
     let question = document.getElementById('input-create-s1').value;
     let answer = document.getElementById('input-create-s2').value;
@@ -244,6 +258,27 @@ const searchSentece = () => {
 
     showBackground();
     document.getElementById('popup-search').classList.remove('active');
+}
+
+
+const deleteSentence = (sentenceId) => {
+    if (! isInteger(sentenceId)){
+        window.location.replace("404.html");
+    }
+
+    deleteData('/delete',
+    {
+        id:Number(sentenceId)
+    })
+    .then(data => {
+        console.log("[deleteSentence] Delete a question ID: " + sentenceId);
+        showBackground();
+        document.getElementById('popup-delete').classList.remove('active');
+        pagination.initPage();
+    })
+    .catch(error => {
+        console.log("[deleteSentence] fetch request failed: " + error);
+    });
 }
 
 
@@ -290,20 +325,40 @@ const getSentenceList = (page, keyword='') => {
             let record_info = document.createElement("tr");
 
             record_info.innerHTML = '<td>' + (record.id + 1) + 
-                '<button id="btn-delete"><svg class="ico-delete"></svg></button>' +
+                '<button id="btn-delete" sid=' + (record.id) + 
+                '><svg class="ico-delete"></svg></button>' +
                 '</td><td>' + record.translated +
-                '<button id="btn-edit-1"><svg class="ico-edit"></svg></button>' +
+                '<button id="btn-edit-1" sid=' + (record.id) + 
+                '><svg class="ico-edit"></svg></button>' +
                 '</td><td>' + record.original +
-                '<button id="btn-edit-2"><svg class="ico-edit"></svg></button>' +
+                '<button id="btn-edit-2" sid=' + (record.id) + 
+                '><svg class="ico-edit"></svg></button>' +
                 '</td>';
 
             contents.append(record_info);
         }
 
+        EnableButtons();
+
         console.log("[getSentenceList] Found the list of sentences: '#" + (res[0].id + 1) + " ~ #" + (res[0].id + res.length) + "'");
     })
     .fail(function(jqXHR, textStatus, errorThrown) { console.log('[getSentenceList] getJSON request failed: ' + textStatus); })
     .always(function() { console.log('[getSentenceList] getJSON request ended!'); });
+}
+
+
+const EnableButtons = () => {
+    // Delete
+    const btnDeletes = document.querySelectorAll('#btn-delete');
+
+    Array.from(btnDeletes).forEach(function (btnDelete){
+        btnDelete.addEventListener('click', function(){
+            hideBackground();
+            document.getElementById('popup-delete').classList.add('active');
+            sid = btnDelete.getAttribute("sid");
+            document.querySelector('.sentence-id').innerText = Number(sid) + 1;
+        });
+    });
 }
 
 
@@ -362,6 +417,9 @@ document.addEventListener('DOMContentLoaded', function(){
             pagination.setCurrentPage(pagination.currentPage + 1);
     });
 
+    // Pop-ups
+    const popUPs = document.querySelectorAll('.popup');
+
     // Reset
     let btnReset = document.getElementById('btn-reset');
 
@@ -371,41 +429,45 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     // Create
-    let btnAdd = document.getElementById('btn-add');
+    const btnAdd = document.getElementById('btn-add');
 
     btnAdd.addEventListener('click', function() {
         hideBackground();
         document.getElementById('popup-create').classList.add('active');
     });
 
-    let btnConfirmAdd = document.querySelector('#popup-create #btn-confirm');
+    const btnConfirmAdd = document.querySelector('#popup-create #btn-confirm');
     
     btnConfirmAdd.addEventListener('click', function() {
         createSentece();
     });
 
     // Search
-    let btnSearch = document.getElementById('btn-search');
+    const btnSearch = document.getElementById('btn-search');
 
     btnSearch.addEventListener('click', function() {
         hideBackground();
         document.getElementById('popup-search').classList.add('active');
     });
 
-    let btnConfirmSearch = document.querySelector('#popup-search #btn-confirm');
+    const btnConfirmSearch = document.querySelector('#popup-search #btn-confirm');
     
     btnConfirmSearch.addEventListener('click', function() {
         searchSentece();
     });
-
+    
     // Delete
+    const btnConfirmDelete = document.querySelector('#popup-delete #btn-confirm');
+    
+    btnConfirmDelete.addEventListener('click', function() {
+        deleteSentence(sid);
+    });
 
     // Edit-1
 
     // Edit-2
 
     // Cancle
-    const popUPs = document.querySelectorAll('.popup');
     const btnCancles = document.querySelectorAll('#btn-cancle');
 
     Array.from(btnCancles).forEach(function (btnCancle){

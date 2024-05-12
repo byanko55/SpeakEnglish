@@ -34,3 +34,11 @@ def create_item(db: Session, item: schemas.ItemCreate):
     db.refresh(db_item)
     
     return db_item
+
+
+def delete_item(db: Session, item: schemas.ItemDelete):
+    db_item = db.query(models.Item).filter(models.Item.id == item.id).first()
+    db.delete(db_item)
+    db.commit()
+    
+    return db_item

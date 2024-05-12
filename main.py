@@ -6,6 +6,10 @@ from sqlalchemy.orm import Session
 
 import time
 import random
+import logging
+
+logger = logging.getLogger('uvicorn.error')
+logger.setLevel(logging.DEBUG)
 
 import crud, models, schemas
 from database import SessionLocal, engine
@@ -87,18 +91,11 @@ def get_records(page:int = 1, keyword:str = '', db: Session = Depends(get_db)):
 def create_records(item: schemas.ItemCreate, db: Session = Depends(get_db)):
     return crud.create_item(db=db, item=item)
 
-"""
-@app.get("/item/", response_model=list[schemas.Item])
-def read_items(n: int = 4, db: Session = Depends(get_db)):
-    items = crud.get_item(db, n=n)
-    return items
 
+@app.delete("/delete", response_model=schemas.Item)
+def delete_record(item: schemas.ItemDelete, db: Session = Depends(get_db)):
+    return crud.delete_item(db=db, item=item)
 
-@app.get("/items/", response_model=list[schemas.Item])
-def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    items = crud.get_items(db, skip=skip, limit=limit)
-    return items
-"""
 
 @app.exception_handler(404)
 async def non_exist_page(request, __):
