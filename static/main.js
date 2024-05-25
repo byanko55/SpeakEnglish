@@ -412,7 +412,6 @@ const EnableButtons = () => {
             document.querySelectorAll('.sentence-id').forEach(id => {
                 id.innerText = Number(sid) + 1;
             });
-            //document.querySelector('.sentence-id').innerText = Number(sid) + 1;
         });
     });
 
@@ -468,6 +467,22 @@ document.addEventListener('DOMContentLoaded', function(){
     nextQuestion();
 
     // Play
+    let btnPlay = document.getElementById('btn-play');
+
+    const ttsMessage = new SpeechSynthesisUtterance(
+        lang='en-US', 
+        pitch = 1,
+        rate = 1,
+        volume = 1
+    );
+
+    btnPlay.addEventListener('click', function() {
+        let answer = document.querySelector('.answer').innerText;
+
+        ttsMessage.text = answer;
+
+        window.speechSynthesis.speak(ttsMessage);
+    });
 
     // Pagination
     let btnFirstPage = document.getElementById('btn-firstpage');
