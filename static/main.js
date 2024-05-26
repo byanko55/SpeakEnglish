@@ -439,6 +439,47 @@ const EnableButtons = () => {
 }
 
 
+const playAnswer = (answer) => {
+    var res;
+
+    $.getJSON('/play', {text:answer}, function (data) {
+        console.log("[playAnswer] Perform the text-to-speech request for the answer: " + answer);
+        res = data[0];
+    })
+    .done(function() {
+        var audioFile = new Audio();
+
+        let audioBlob = base64ToBlob(res.raw, "mp3");
+        audioFile.src = window.URL.createObjectURL(audioBlob);
+        audioFile.playbackRate = 1;
+        audioFile.play();
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) { console.log('[playAnswer] getJSON request failed: ' + textStatus); })
+    .always(function() { console.log('[playAnswer] getJSON request ended!'); });
+}
+
+
+const base64ToBlob = (base64, fileType) => {
+    let typeHeader = "data:application/" + fileType + ";base64,";
+    let audioSrc = typeHeader + base64; 
+    let arr = audioSrc.split(",");
+    let array = arr[0].match(/:(.*?);/);
+    let mime = (array && array.length > 1 ? array[1] : type) || type;
+
+    let bytes = window.atob(arr[1]);
+    let ab = new ArrayBuffer(bytes.length);
+    let ia = new Uint8Array(ab);
+
+    for (let i = 0; i < bytes.length; i++) {
+        ia[i] = bytes.charCodeAt(i);
+    }
+
+    return new Blob([ab], {
+        type: mime
+    });
+}
+
+
 document.addEventListener('DOMContentLoaded', function(){
     // tab
     tabMain.addEventListener('click', function() {
@@ -469,19 +510,10 @@ document.addEventListener('DOMContentLoaded', function(){
     // Play
     let btnPlay = document.getElementById('btn-play');
 
-    const ttsMessage = new SpeechSynthesisUtterance(
-        lang='en-US', 
-        pitch = 1,
-        rate = 1,
-        volume = 1
-    );
-
     btnPlay.addEventListener('click', function() {
         let answer = document.querySelector('.answer').innerText;
 
-        ttsMessage.text = answer;
-
-        window.speechSynthesis.speak(ttsMessage);
+        playAnswer(answer);
     });
 
     // Pagination

@@ -3,13 +3,12 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from google.cloud import texttospeech
+from google.oauth2 import service_account
 
 import time
 import random
-import logging
-
-logger = logging.getLogger('uvicorn.error')
-logger.setLevel(logging.DEBUG)
+import base64
 
 import crud, models, schemas
 from database import SessionLocal, engine
@@ -71,6 +70,30 @@ def get_nextQA(db: Session = Depends(get_db)):
     QA = random_question(db)
 
     return [{'question_id': QA.id + 1, 'question': QA.translated}]
+
+
+@app.get("/play")
+def play_answer(text: str):
+    credentials = service_account.Credentials.from_service_account_file('credential.json')
+
+    client = texttospeech.TextToSpeechClient(credentials=credentials)
+
+    utter_msg = texttospeech.SynthesisInput(text=text)
+
+    voice = texttospeech.VoiceSelectionParams(
+        language_code="en-US",
+        ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL
+    )
+
+    audio_config = texttospeech.AudioConfig(
+        audio_encoding=texttospeech.AudioEncoding.MP3
+    )
+
+    response = client.synthesize_speech(
+        input=utter_msg, voice=voice, audio_config=audio_config
+    )
+    
+    return [{'raw': base64.b64encode(response.audio_content).decode('utf-8')}]
 
 
 @app.get("/count")
