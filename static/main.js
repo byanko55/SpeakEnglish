@@ -129,69 +129,48 @@ const updateURLParams = () => {
 }
 
 
-const getPageCount = (keyword='') => {
-    var res;
+const sendHTTPRequest = async (url = '', method, data = {}) => {
+    if (method == 'GET'){
+        const response = await fetch(url, {
+            method: 'GET'
+        });
+    
+        return response.json();
+    }
+    else {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+    
+        return response.json();
+    }
+}
 
-    $.getJSON('/count', {keyword:keyword}, function (data) {
-        console.log("[getPageCount] Get the number of sentences");
-        res = data[0];
-    })
-    .done(function() {
-        let pageCount = Math.max(Math.ceil(res.count / pagination.paginationLimit), 1);
+
+const getPageCount = (keyword='') => {
+    sendHTTPRequest(`/count?keyword=${keyword}`, 'GET', {})
+    .then(data => {
+        let pageCount = Math.max(Math.ceil(data.count / pagination.paginationLimit), 1);
         pagination.pageCount = pageCount;
         pagination.initPage();
 
         document.querySelector(".total-pages").innerText = pageCount;
     })
-    .fail(function(jqXHR, textStatus, errorThrown) { console.log('[getPageCount] getJSON request failed: ' + textStatus); })
-    .always(function() { console.log('[getPageCount] getJSON request ended!'); });
+    .catch(error => {
+        console.log("[getPageCount] request failed: " + error);
+    });
 }
-
-
-const postData = async (url = '', data = {}) => {
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    });
-
-    return response.json();
-};
-
-
-const deleteData = async (url = '', data = {}) => {
-    const response = await fetch(url, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    });
-
-    return response.json();
-};
-
-
-const putData = async (url = '', data = {}) => {
-    const response = await fetch(url, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    });
-
-    return response.json();
-};
 
 
 const createSentece = () => {
     let question = document.getElementById('input-create-s1').value;
     let answer = document.getElementById('input-create-s2').value;
 
-    postData('/create',
+    sendHTTPRequest('/create', 'POST',
     {
         translated:question,
         original:answer
@@ -206,7 +185,7 @@ const createSentece = () => {
         pagination.initPage();
     })
     .catch(error => {
-        console.log("[createSentece] fetch request failed: " + error);
+        console.log("[createSentece] request failed: " + error);
     });
 }
 
@@ -227,7 +206,7 @@ const deleteSentence = (sentenceId) => {
         window.location.replace("404.html");
     }
 
-    deleteData('/delete',
+    sendHTTPRequest('/delete', 'DELETE',
     {
         id:Number(sentenceId)
     })
@@ -238,7 +217,7 @@ const deleteSentence = (sentenceId) => {
         pagination.initPage();
     })
     .catch(error => {
-        console.log("[deleteSentence] fetch request failed: " + error);
+        console.log("[deleteSentence] request failed: " + error);
     });
 }
 
@@ -257,7 +236,7 @@ const editSentence = (sentenceId, IsQuestion) => {
         keyword = document.getElementById('input-edit-2').value;
     }
 
-    putData('/edit',
+    sendHTTPRequest('/edit', 'PUT',
     {
         id:Number(sentenceId),
         new_content: keyword,
@@ -293,13 +272,14 @@ const showBackground = () => {
 
 
 const getSentenceList = (page, keyword='') => {
-    var res;
+    let url = `search?page=${page}`;
 
-    $.getJSON('/search', {page:page, keyword:keyword}, function (data) {
-        console.log("[getSentenceList] Request for the table of sentences at page " + page);
-        res = data;
-    })
-    .done(function() {
+    if (keyword != '') url = url + `&keyword=${keyword}`;
+
+    console.log("[getSentenceList] Request for the table of sentences at page " + page);
+
+    sendHTTPRequest(url, 'GET', {})
+    .then(data => {
         let notFoundMsg = document.querySelector('.not-found');
         let dbtable = document.querySelector(".dbtable");
         const contents = dbtable.querySelector('tbody');
@@ -308,7 +288,7 @@ const getSentenceList = (page, keyword='') => {
             item.remove();
         });
 
-        if (res.length == 0) {
+        if (data.length == 0) {
             notFoundMsg.classList.add('active');
             dbtable.classList.remove('active');
             console.log("[getSentenceList] Have not found any sentences");
@@ -319,8 +299,8 @@ const getSentenceList = (page, keyword='') => {
         notFoundMsg.classList.remove('active');
         dbtable.classList.add('active');
 
-        for (var i = 0; i < res.length; i++) {
-            var record = res[i];
+        for (var i = 0; i < data.length; i++) {
+            var record = data[i];
 
             let record_info = document.createElement("tr");
 
@@ -340,10 +320,11 @@ const getSentenceList = (page, keyword='') => {
 
         EnableButtons();
 
-        console.log("[getSentenceList] Found the list of sentences: '#" + (res[0].id + 1) + " ~ #" + (res[0].id + res.length) + "'");
+        console.log("[getSentenceList] Found the list of sentences: '#" + (data[0].id + 1) + " ~ #" + (data[0].id + data.length) + "'");
     })
-    .fail(function(jqXHR, textStatus, errorThrown) { console.log('[getSentenceList] getJSON request failed: ' + textStatus); })
-    .always(function() { console.log('[getSentenceList] getJSON request ended!'); });
+    .catch(error => {
+        console.log("[getSentenceList] request failed: " + error);
+    });
 }
 
 
@@ -388,22 +369,20 @@ const EnableButtons = () => {
 
 
 const playAnswer = (answer) => {
-    var res;
+    console.log("[playAnswer] Perform the text-to-speech request for the answer: " + answer);
 
-    $.getJSON('/play', {text:answer}, function (data) {
-        console.log("[playAnswer] Perform the text-to-speech request for the answer: " + answer);
-        res = data[0];
-    })
-    .done(function() {
+    sendHTTPRequest(`/play?text=${answer}`, 'GET', {})
+    .then(data => {
         var audioFile = new Audio();
 
-        let audioBlob = base64ToBlob(res.raw, "mp3");
+        let audioBlob = base64ToBlob(data.raw, "mp3");
         audioFile.src = window.URL.createObjectURL(audioBlob);
         audioFile.playbackRate = 1;
         audioFile.play();
     })
-    .fail(function(jqXHR, textStatus, errorThrown) { console.log('[playAnswer] getJSON request failed: ' + textStatus); })
-    .always(function() { console.log('[playAnswer] getJSON request ended!'); });
+    .catch(error => {
+        console.log("[playAnswer] request failed: " + error);
+    });
 }
 
 
@@ -456,19 +435,17 @@ document.addEventListener('DOMContentLoaded', function(){
     let btnPlay = document.getElementById('btn-play');
 
     btnReveal.addEventListener('click', function() {
-        var res;
+        console.log("[revealAnswer] Request for the original sentence  before being translated: '" + questionArea.innerText + "'");
 
-        $.getJSON('/reveal', {}, function (data) {
-            console.log("[revealAnswer] Request for the original sentence  before being translated: '" + questionArea.innerText + "'");
-            res = data[0];
-        })
-        .done(function() {
-            answerArea.innerText = res.answer;
+        sendHTTPRequest(`/reveal`, 'GET', {})
+        .then(data => {
+            answerArea.innerText = data.answer;
             btnPlay.classList.add('active');
-            console.log("[revealAnswer] Found answer: '" + res.answer + "'");
+            console.log("[revealAnswer] Found answer: '" + data.answer + "'");
         })
-        .fail(function(jqXHR, textStatus, errorThrown) { console.log('[revealAnswer] getJSON request failed: ' + textStatus); })
-        .always(function() { console.log('[revealAnswer] getJSON request ended!'); });
+        .catch(error => {
+            console.log("[revealAnswer] request failed: " + error);
+        });
     });
 
     // Next
@@ -476,21 +453,19 @@ document.addEventListener('DOMContentLoaded', function(){
     let btnNext = document.getElementById('btn-next');
 
     btnNext.addEventListener('click', function() {
-        var res;
+        console.log("[nextQuestion] Request for the next Q&A");
 
-        $.getJSON('/next', {}, function (data) {
-            console.log("[nextQuestion] Request for the next Q&A");
-            res = data[0];
-        })
-        .done(function() {
-            questionArea.innerText = res.question;
-            questionID.innerText = '#' + res.question_id;
+        sendHTTPRequest(`/next`, 'GET', {})
+        .then(data => {
+            questionArea.innerText = data.question;
+            questionID.innerText = '#' + data.question_id;
             answerArea.innerText = '...';
             btnPlay.classList.remove('active');
-            console.log("[nextQuestion] Found question: '" + res.question + "'");
+            console.log("[nextQuestion] Found question: '" + data.question + "'");
         })
-        .fail(function(jqXHR, textStatus, errorThrown) { console.log('[nextQuestion] getJSON request failed: ' + textStatus); })
-        .always(function() { console.log('[nextQuestion] getJSON request ended!'); });
+        .catch(error => {
+            console.log("[nextQuestion] request failed: " + error);
+        });
     });
 
     // Play
