@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 
 import models, schemas
 
@@ -11,7 +12,10 @@ def get_items(db: Session, keyword: str = '', skip: int = 0, limit: int = 15):
     records = db.query(models.Item)
     
     if keyword != '':
-        records = records.filter(models.Item.translated.contains(keyword))
+        records = records.filter(or_(
+            models.Item.translated.contains(keyword),
+            models.Item.original.contains(keyword)
+        ))
     
     records = records.order_by(models.Item.id).offset(skip).limit(limit).all()
     
