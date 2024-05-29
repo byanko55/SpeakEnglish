@@ -60,7 +60,7 @@ async def index(request:Request, db: Session = Depends(get_db)):
 def get_answer():
     global QA
 
-    return [{'answer': QA.original}]
+    return {'answer': QA.original}
 
 
 @app.get("/next")
@@ -69,7 +69,7 @@ def get_nextQA(db: Session = Depends(get_db)):
 
     QA = random_question(db)
 
-    return [{'question_id': QA.id + 1, 'question': QA.translated}]
+    return {'question_id': QA.id + 1, 'question': QA.translated}
 
 
 @app.get("/play")
@@ -93,14 +93,14 @@ def play_answer(text: str):
         input=utter_msg, voice=voice, audio_config=audio_config
     )
     
-    return [{'raw': base64.b64encode(response.audio_content).decode('utf-8')}]
+    return {'raw': base64.b64encode(response.audio_content).decode('utf-8')}
 
 
 @app.get("/count")
 def get_count(keyword:str = '', db: Session = Depends(get_db)):
     cnt = crud.get_counts(db, keyword)
 
-    return [{'count': cnt}]
+    return {'count': cnt}
 
 
 @app.get("/search")
