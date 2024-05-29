@@ -18,7 +18,10 @@ class Pagination{
         this.pageCount = 0;
         this.reload = false;
 
-        document.getElementById("input-page").value = this.currentPage;
+        if (page != -1) {
+            document.getElementById("input-page").value = this.currentPage;
+        }
+
         getPageCount(this.filterKeyword);
     }
 
@@ -156,7 +159,14 @@ const getPageCount = (keyword='') => {
     .then(data => {
         let pageCount = Math.max(Math.ceil(data.count / pagination.paginationLimit), 1);
         pagination.pageCount = pageCount;
-        pagination.initPage();
+
+        if (pagination.currentPage == -1) {
+            document.getElementById("input-page").value = pageCount;
+            pagination.setLastPage();
+        }
+        else {
+            pagination.initPage();
+        }
 
         document.querySelector(".total-pages").innerText = pageCount;
     })
@@ -182,7 +192,7 @@ const createSentece = () => {
         );
         showBackground();
         document.getElementById('popup-create').classList.remove('active');
-        pagination.initPage();
+        pagination = new Pagination(-1, '');
     })
     .catch(error => {
         console.log("[createSentece] request failed: " + error);
