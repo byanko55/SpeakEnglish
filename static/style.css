@@ -124,6 +124,27 @@ input {
     } 
 }
 
+.ta a {
+    text-decoration: none;
+    color: #4D869C;
+    transition: background-size .4s ease;
+    background: linear-gradient(to bottom, transparent 62%, #fff87e 0) center center/0% 75% no-repeat;
+    
+    &:hover {
+        background-size: 100% 100%;
+    }
+    &:active {
+        background-size: 80% 100%;
+    }
+    &-container {
+        z-index: 1;
+        position: relative;
+        background-color: #fff;
+        padding: 60px;
+        box-shadow: 0 0 90px 10px rgba(95, 124, 179, 0.15);
+    }
+}
+
 #main {
     padding: 2rem;
     opacity: 1.0;
@@ -452,7 +473,7 @@ input {
     }
 
     table.active {
-        height: calc(100vh - 192px);
+        height: calc(100vh - 208px);
         min-height: 384px;
         max-height: 768px;
     }
