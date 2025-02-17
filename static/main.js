@@ -314,7 +314,7 @@ const getSentenceList = (page, keyword='') => {
 
             let record_info = document.createElement("tr");
 
-            record_info.innerHTML = '<td>' + (record.id + 1) + 
+            record_info.innerHTML = '<td>' + (record.id) + 
                 '<button id="btn-delete" sid=' + (record.id) + 
                 '><svg class="ico-delete"></svg></button>' +
                 '</td><td>' + record.translated +
@@ -330,7 +330,7 @@ const getSentenceList = (page, keyword='') => {
 
         EnableButtons();
 
-        console.log("[getSentenceList] Found the list of sentences: '#" + (data[0].id + 1) + " ~ #" + (data[0].id + data.length) + "'");
+        console.log("[getSentenceList] Found the list of sentences: '#" + (data[0].id) + " ~ #" + (data[0].id + data.length - 1) + "'");
     })
     .catch(error => {
         console.log("[getSentenceList] request failed: " + error);
@@ -413,6 +413,35 @@ const base64ToBlob = (base64, fileType) => {
 
     return new Blob([ab], {
         type: mime
+    });
+}
+
+
+const downloadSentence = () => {
+    let url = `export`;
+
+    console.log("[downloadSentence] Download the table of sentences");
+
+    let filename = "English.csv";
+
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'content-type': 'text/csv;charset=UTF-8'
+        }
+    })
+    .then((response) => response.text())
+    .then((responseText) => {
+        const blob = new Blob(['\ufeff' + responseText], { type: 'text/csv' });
+        const downloadURL = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.setAttribute('href', downloadURL);
+        a.setAttribute('download', filename);
+        a.click();
+    })
+    .catch(error => {
+        console.log("[downloadSentence] request failed: " + error);
     });
 }
 
@@ -582,5 +611,12 @@ document.addEventListener('DOMContentLoaded', function(){
                 popUP.classList.remove('active');
             });
         });
+    }); 
+
+    // Export
+    const btnExportSentences = document.querySelector('#btn-export');
+    
+    btnExportSentences.addEventListener('click', function() {
+        downloadSentence();
     });
 });

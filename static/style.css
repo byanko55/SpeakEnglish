@@ -585,6 +585,27 @@ input {
     font-weight: 600;
 }
 
+#btn-export {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    padding: 10px 16px;
+    background: darkseagreen;
+    border-radius: 6px;
+    font-size: 18px;
+    color: #fff;
+    display: inline-flex;
+
+    svg {
+        width: 18px;
+        height: 18px;
+        background-color: #444;
+        margin-right: 4px;
+        -webkit-mask-image:url('/static/img/export.svg');
+        mask-image:url('/static/img/export.svg');
+    }
+}
+
 
 .ico-play {
     -webkit-mask-image:url('/static/img/audioplay.svg');
@@ -635,4 +656,9 @@ input {
 .ico-edit {
     -webkit-mask-image:url('/static/img/edit.svg');
     mask-image:url('/static/img/edit.svg');
+}
+
+.ico-export {
+    -webkit-mask-image:url('/static/img/export.svg');
+    mask-image:url('/static/img/export.svg');
 }

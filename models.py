@@ -4,7 +4,7 @@ from database import Base
 
 
 class Item(Base):
-    __tablename__ = "sentencetable"
+    __tablename__ = "sentences"
 
     id = Column(Integer, primary_key=True)
     translated = Column(String, nullable=False)
